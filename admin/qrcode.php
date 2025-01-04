@@ -22,7 +22,7 @@
 
   <style>
     #qr-reader {
-      width: 300px;
+      width: 150px;
       margin: auto;
       display: none;
     }
