@@ -20,6 +20,27 @@
           </a>
         </li>
   
+
+        <li class="nav-item">
+  <a class="nav-link" href="qrcode-page.php">
+    <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
+      <svg width="12px" height="12px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <title>QR Code</title>
+        <g fill="none" fill-rule="evenodd">
+          <rect fill="#FFFFFF" x="0" y="0" width="24" height="24"></rect>
+          <path class="color-background opacity-6" fill="#FFFFFF" d="M4,4 L8,4 L8,8 L4,8 L4,4 Z M6,6 L6,6.5 L6.5,6.5 L6.5,6 L6,6 Z"></path>
+          <path class="color-background opacity-6" fill="#FFFFFF" d="M16,4 L20,4 L20,8 L16,8 L16,4 Z M18,6 L18,6.5 L18.5,6.5 L18.5,6 L18,6 Z"></path>
+          <path class="color-background opacity-6" fill="#FFFFFF" d="M4,16 L8,16 L8,20 L4,20 L4,16 Z M6,18 L6,18.5 L6.5,18.5 L6.5,18 L6,18 Z"></path>
+          <path class="color-background opacity-6" fill="#FFFFFF" d="M18,16 L20,16 L20,18 L18,18 L18,16 Z"></path>
+          <path class="color-background" fill="#FFFFFF" d="M10,10 L14,10 L14,14 L10,14 L10,10 Z"></path>
+        </g>
+      </svg>
+    </div>
+    <span class="nav-link-text ms-1">QR Code / Barcode</span>
+  </a>
+</li>
+
+
 <li class="nav-item">
   <a class="nav-link" href="product.php">
     <div class="icon icon-shape icon-sm shadow border-radius-md bg-white text-center me-2 d-flex align-items-center justify-content-center">
@@ -114,3 +135,23 @@
           </a>
         </li>
       </ul>
+      
+      <script>
+        // Get all the nav links
+const navLinks = document.querySelectorAll('.nav-link');
+
+// Get the current URL
+const currentPage = window.location.href;
+
+// Loop through each link and check if its href matches the current page
+navLinks.forEach(link => {
+  if (link.href === currentPage) {
+    // Add the 'active' class to the matching link
+    link.classList.add('active');
+  } else {
+    // Remove the 'active' class from the non-matching links
+    link.classList.remove('active');
+  }
+});
+
+      </script>

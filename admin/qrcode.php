@@ -17,7 +17,7 @@
   <link id="pagestyle" href="../assets/css/soft-ui-dashboard.css?v=1.1.0" rel="stylesheet" />
 
   <!-- Html5-QRCode Library -->
-  <script src="https://unpkg.com/html5-qrcode/html5-qrcode.min.js"></script>
+
 
 
   <style>
