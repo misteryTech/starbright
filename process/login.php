@@ -38,11 +38,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             }
             exit();
         } else {
-            echo "<script>alert('Incorrect password!'); window.location.href = '../login.php';</script>";
+            echo "<script>alert('Incorrect password!'); window.location.href = '../sign-in.php';</script>";
             exit();
         }
     } else {
-        echo "<script>alert('User not found!'); window.location.href = '../login.php';</script>";
+        echo "<script>alert('User not found!'); window.location.href = '../sign-in.php';</script>";
         exit();
     }
 
