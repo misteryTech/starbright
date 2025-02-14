@@ -645,41 +645,36 @@
   <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
   <script src="../assets/js/plugins/chartjs.min.js"></script>
   <script>
-
-    
 document.addEventListener("DOMContentLoaded", function () {
     fetchNextQRCode();
     generateSlug();
-});
-
-
-
-document.getElementById("addValueBtn").addEventListener("click", function() {
-    var variationsContainer = document.getElementById("productVariations");
-    var originalForm = document.querySelector(".variation-form");
-    
-    if (!originalForm) {
-        console.error("No variation-form found!");
-        return;
-    }
-
-    var newForm = originalForm.cloneNode(true);
-
-    // Clear input fields in the cloned form
-    newForm.querySelectorAll("input, textarea").forEach(input => input.value = "");
-
-    // Append the new variation form
-    variationsContainer.appendChild(newForm);
-
-    // Ensure newly added form has a working remove button
     enableRemoveButtons();
 });
 
+// Add new variation form
+const addValueBtn = document.getElementById("addValueBtn");
+if (addValueBtn) {
+    addValueBtn.addEventListener("click", function () {
+        const variationsContainer = document.getElementById("productVariations");
+        const originalForm = document.querySelector(".variation-form");
+        
+        if (!originalForm) {
+            console.error("No variation-form found!");
+            return;
+        }
+
+        const newForm = originalForm.cloneNode(true);
+        newForm.querySelectorAll("input, textarea").forEach(input => input.value = "");
+        variationsContainer.appendChild(newForm);
+        enableRemoveButtons();
+    });
+}
+
+// Enable remove button functionality
 function enableRemoveButtons() {
     document.querySelectorAll(".remove-variation").forEach(button => {
-        button.onclick = function() {
-            var formToRemove = this.closest(".variation-form"); // Get closest form container
-
+        button.onclick = function () {
+            const formToRemove = this.closest(".variation-form");
             if (document.querySelectorAll(".variation-form").length > 1) {
                 formToRemove.remove();
             } else {
@@ -689,64 +684,21 @@ function enableRemoveButtons() {
     });
 }
 
-// Initialize remove button functionality
-enableRemoveButtons();
-
-
+// Handle product registration form submission
 $(document).ready(function () {
     $('#productRegistration').on('submit', function (e) {
         e.preventDefault();
-
-        var formData = new FormData(this); // Handle file uploads
-
-        // Determine if Single or Variation is selected
-        var isVariation = $('#pills-variation-tab').hasClass('active');
+        let formData = new FormData(this);
+        let isVariation = $('#pills-variation-tab').hasClass('active');
         formData.append("variation", isVariation ? "true" : "false");
 
         $.ajax({
             type: 'POST',
-            url: 'process/product-registration.php', // Adjust the endpoint as needed
+            url: 'process/product-registration.php',
             data: formData,
-            contentType: false, // Important for file uploads
-            processData: false, // Prevent jQuery from processing data
-            success: function (response) {
-                console.log("RAW RESPONSE:", response); // Log raw response for debugging
-
-                try {
-                    // Ensure response is JSON
-                    let jsonResponse = typeof response === "string" ? JSON.parse(response) : response;
-
-                    if (jsonResponse.status === "success") {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: jsonResponse.message,
-                            icon: 'success',
-                            confirmButtonText: 'OK'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                window.location.reload();
-                            }
-                        });
-
-                        $('#productRegistration')[0].reset(); // Reset form after success
-                    } else {
-                        Swal.fire({
-                            title: 'Error',
-                            text: jsonResponse.message || "Something went wrong!",
-                            icon: 'error',
-                            confirmButtonText: 'Try Again'
-                        });
-                    }
-                } catch (e) {
-                    console.error("JSON Parsing Error:", e, "Response:", response);
-                    Swal.fire({
-                        title: 'Error',
-                        text: 'An unexpected error occurred. Check console for details.',
-                        icon: 'error',
-                        confirmButtonText: 'Try Again'
-                    });
-                }
-            },
+            contentType: false,
+            processData: false,
+            success: handleRegistrationResponse,
             error: function (xhr, status, error) {
                 console.error("AJAX Error:", error, "Status:", status, "XHR:", xhr);
                 Swal.fire({
@@ -758,167 +710,114 @@ $(document).ready(function () {
             }
         });
     });
-
-
 });
 
-
-
-function productAttrib() {
-    var variationName = document.getElementById("productVariationDropdown").value;
-    var button = document.getElementById("addValueBtn");
-    var dropdown = document.getElementById("attributeValuesDropdown"); // Target dropdown
-
-    $.ajax({
-        type: 'GET',
-        url: 'fetch/productAttribute-value.php',
-        data: { variationName: variationName },
-        success: function (response) {
-            console.log(response); // Check response structure in console
-
-            if (response.values && Array.isArray(response.values) && response.values.length > 0) {
-                button.disabled = false; // Enable button
-
-                // **Clear dropdown only if new data exists**
-                dropdown.innerHTML = "";
-
-                // Add default placeholder
-                var defaultOption = document.createElement("option");
-                defaultOption.text = "Select an option";
-                defaultOption.value = "";
-                dropdown.appendChild(defaultOption);
-
-                // Populate dropdown with values
-                response.values.forEach(function (item) {
-                    var option = document.createElement("option");
-                    option.value = item.id;
-                    option.text = item.value;
-                    dropdown.appendChild(option);
-                });
-            } else {
-                console.error("No values found", response);
-
-                // **Fix: Do NOT clear dropdown, only disable button**
-                button.disabled = true;
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error("AJAX Error: " + status + " - " + error);
-            
-            // **Fix: Only disable button if dropdown has no previous values**
-            if (dropdown.options.length === 0) {
-                button.disabled = true;
-            }
+function handleRegistrationResponse(response) {
+    console.log("RAW RESPONSE:", response);
+    try {
+        let jsonResponse = typeof response === "string" ? JSON.parse(response) : response;
+        if (jsonResponse.status === "success") {
+            Swal.fire({
+                title: 'Success!',
+                text: jsonResponse.message,
+                icon: 'success',
+                confirmButtonText: 'OK'
+            }).then(() => window.location.reload());
+            $('#productRegistration')[0].reset();
+        } else {
+            Swal.fire({
+                title: 'Error',
+                text: jsonResponse.message || "Something went wrong!",
+                icon: 'error',
+                confirmButtonText: 'Try Again'
+            });
         }
-    });
-}
-
-
-
-function productAttrib() {
-    var variationName = document.getElementById("productVariationDropdown").value;
-    var button = document.getElementById("addValueBtn");
-    var dropdown = document.getElementById("attributeValuesDropdown"); // Target dropdown
-
-    $.ajax({
-        type: 'GET',
-        url: 'fetch/productAttribute-value.php',
-        data: { variationName: variationName },
-        success: function (response) {
-            console.log(response); // Check response structure in console
-
-            // Clear the dropdown before processing the response
-            dropdown.innerHTML = "";
-
-            if (response.values && Array.isArray(response.values) && response.values.length > 0) {
-                button.disabled = false; // Enable button
-
-                // Add default placeholder
-                var defaultOption = document.createElement("option");
-                defaultOption.text = "Select an option";
-                defaultOption.value = "";
-                dropdown.appendChild(defaultOption);
-
-                // Populate dropdown with values
-                response.values.forEach(function (item) {
-                    var option = document.createElement("option");
-                    option.value = item.id;
-                    option.text = item.value;
-                    dropdown.appendChild(option);
-                });
-            } else {
-                console.error("No values found", response);
-                
-                // **Clear the dropdown and disable the button**
-                button.disabled = true;
-            }
-        },
-        error: function (xhr, status, error) {
-            console.error("AJAX Error: " + status + " - " + error);
-            
-            // **On AJAX error, clear the dropdown and disable the button**
-            dropdown.innerHTML = "No Values";
-            button.disabled = true;
-        }
-    });
-}
-
-
-
-
-// 🖼️ Show uploaded product image instantly
-document.getElementById("productImage").addEventListener("change", function(event) {
-    const file = event.target.files[0]; 
-    const showImage = document.getElementById("showImage");
-
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            showImage.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" width="150">`;
-        };
-        reader.readAsDataURL(file);
-    } else {
-        showImage.innerHTML = ``; 
+    } catch (e) {
+        console.error("JSON Parsing Error:", e, "Response:", response);
+        Swal.fire({
+            title: 'Error',
+            text: 'An unexpected error occurred. Check console for details.',
+            icon: 'error',
+            confirmButtonText: 'Try Again'
+        });
     }
-});
-
-// 🏷️ Generate Slug from Name
-function generateSlug() {
-    var name = document.getElementById('productName').value;
-    var slug = name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
-    document.getElementById('slug').value = slug;
 }
 
-// 📦 Fetch Next QR Code and Update Image
+// Fetch product attributes
+function productAttrib() {
+    const variationName = document.getElementById("productVariationDropdown").value;
+    const button = document.getElementById("addValueBtn");
+    const dropdown = document.getElementById("attributeValuesDropdown");
+
+    $.ajax({
+        type: 'GET',
+        url: 'fetch/productAttribute-value.php',
+        data: { variationName },
+        success: function (response) {
+            console.log(response);
+            dropdown.innerHTML = "";
+            
+            if (response.values?.length) {
+                button.disabled = false;
+                dropdown.innerHTML = `<option value="">Select an option</option>` +
+                    response.values.map(item => `<option value="${item.id}">${item.value}</option>`).join('');
+            } else {
+                console.error("No values found", response);
+                button.disabled = true;
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX Error:", status, "-", error);
+            if (!dropdown.options.length) button.disabled = true;
+        }
+    });
+}
+
+// Show uploaded product image instantly
+const productImageInput = document.getElementById("productImage");
+if (productImageInput) {
+    productImageInput.addEventListener("change", function (event) {
+        const file = event.target.files[0];
+        const showImage = document.getElementById("showImage");
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = e => showImage.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" width="150">`;
+            reader.readAsDataURL(file);
+        } else {
+            showImage.innerHTML = "";
+        }
+    });
+}
+
+// Generate Slug from Name
+function generateSlug() {
+    const name = document.getElementById('productName')?.value.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+    if (name) document.getElementById('slug').value = name;
+}
+
+// Fetch Next QR Code and Update Image
 function fetchNextQRCode() {
-    fetch('fetch/barcode_registration.php') 
-        .then(response => response.json()) 
+    fetch('fetch/barcode_registration.php')
+        .then(response => response.json())
         .then(data => {
-            let lastNumber = data.last_qrcode ? parseInt(data.last_qrcode, 10) : 1000000000;
-            let nextNumber = lastNumber + 1;
-
-            // Set the generated number in the input field
+            let nextNumber = (data.last_qrcode ? parseInt(data.last_qrcode, 10) : 1000000000) + 1;
             document.getElementById("qrcode").value = nextNumber;
-
-            // Generate and display QR Code Image
             generateQRCode(nextNumber);
         })
         .catch(error => console.error("Error fetching QR code:", error));
 }
 
-// 🖼️ Generate QR Code Image (Fixes cache issue)
+// Generate QR Code Image
 function generateQRCode(qrText) {
-    let timestamp = new Date().getTime(); // Unique timestamp to force refresh
-    let qrCodeUrl = `https://quickchart.io/qr?text=${qrText}&size=150&t=${timestamp}`;
-    document.getElementById("qrcodeImage").src = qrCodeUrl;
+    document.getElementById("qrcodeImage").src = `https://quickchart.io/qr?text=${qrText}&size=150&t=${Date.now()}`;
 }
 
-// 🖱️ Enable Scrollbar for Windows users
-var win = navigator.platform.indexOf('Win') > -1;
-if (win && document.querySelector('#sidenav-scrollbar')) {
-    var options = { damping: '0.5' };
-    Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+// Enable scrollbar for Windows users
+if (navigator.platform.includes('Win')) {
+    const sidenavScrollbar = document.querySelector('#sidenav-scrollbar');
+    if (sidenavScrollbar) Scrollbar.init(sidenavScrollbar, { damping: '0.5' });
 }
+
 </script>
 
 
