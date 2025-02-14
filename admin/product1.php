@@ -128,14 +128,14 @@
     <div class="container-fluid py-4">
       
       <div class="row my-4">
-        <div class="col-lg-6 col-md-6 mb-md-0 mb-4">
+        <div class="col-lg-8 col-md-6 mb-md-0 mb-4">
          <div class="card">
             <div class="card-header pb-0">
                <h6>Attributes</h6>
                <p class="text-sm mb-0">Fill in the details below to register your attributes.</p>
              </div>
              <div class="card-body px-4 pb-4">
-             <form action="process/product-registration.php" method="POST" enctype="multipart/form-data">
+             <form id="productRegistration" method="POST" enctype="multipart/form-data">
                 <!-- Tab Navigation -->
                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                   <li class="nav-item" role="presentation">
@@ -146,23 +146,69 @@
                   </li>
                 </ul>
                 <div class="row">
-                  <div class="col-md-6">
-                      
+
+                <div class="col-md-6">
+          
                 <div class="mb-3">
-                          <label for="qrcode" class="form-label">Product QRCODE</label>
-                          <input type="text" class="form-control" id="qrcode" name="qrcode" required readonly>
+                          <label for="productName" class="form-label">Product Name</label>
+                          <input type="text" class="form-control" id="productName" name="productname" placeholder="Enter product name"  oninput="generateSlug()" required>
+                  </div>
+
+                  
+                <div class="mb-3">
+                          <label for="productName" class="form-label">Slug</label>
+                          <input type="text" class="form-control" id="slug" name="slug" placeholder="slug" required>
+                  </div>
+
+
+
                 </div>
+
+                <div class="col-md-6">
+          
+          <div class="mb-3">
+                   
+                    <label for="productImage" class="form-label">Product Image</label>
+                    <span id="showImage" class="d-block mb-2"></span> <!-- Image will be shown here -->
+                    <input type="file" class="form-control" id="productImage" name="image" required accept="image/*">
+            </div>
+
+          </div>
+
+
+
+                  <div class="col-md-6">
+            
+                  <div class="mb-3">
+    <label for="qrcode" class="form-label">Product QRCODE</label>
+    <input type="text" class="form-control" id="qrcode" name="qrcode" required readonly>
+</div>
+
+<div class="mb-3">
+                          <label for="productCategory" class="form-label">Category</label>
+                          <select class="form-control" id="category" name="category">
+                                         <option value="N/A">--SELECT CATEGORY--</option>
+                                         <option value="arts-&-crafts">Arts & Crafts</option>
+                                         <option value="bags-&-pouches">Bags & Pouches</option>
+                                         <option value="binders-envelopes-&-folders">Binders, Envelopes & Folders</option>
+                                         <option value="books-&-visual-aids">Books & Visual Aids</option>
+                                         <option value="cutting-&-binding-tools">Cutting & Binding Tools</option>
+                                         <option value="desk-accessories">Desk Accessories</option>
+                                     
+                                   </select>
+                        </div>
 
                 </div>
                 <div class="col-md-6">
-                      
-                      <div class="mb-3">
-                                <label for="qrcode" class="form-label">QR CODE Image</label>
-                                <div>
-                <img id="qrcodeImage" src="" alt="QR Code" style="width: 150px; height: 150px;">
-            </div>
-                      </div>
-                      
+    <div class="mb-3">
+        <label for="qrcodeImage" class="form-label">QR CODE Image</label>
+        <div>
+            <img id="qrcodeImage" src="" alt="QR Code" style="width: 150px; height: 150px;">
+        </div>
+
+
+</div>
+                   
                       </div>
 
                 </div>
@@ -173,51 +219,113 @@
                   <!-- Single Product Tab -->
                   <div class="tab-pane fade show active" id="pills-single" role="tabpanel" aria-labelledby="pills-single-tab">
                     <div class="row">
-                      <!-- Single Product Fields -->
-                      <div class="col-md-6">
 
-                
-
+                             
+                             
+                    <div class="col-md-6">
 
                         <div class="mb-3">
-                          <label for="productName" class="form-label">Product Name</label>
-                          <input type="text" class="form-control" id="productName" name="name" placeholder="Enter product name" required>
+                        <label for="productVariationName" class="form-label">Barcode</label>
+                        <input type="text" class="form-control" id="barcode" name="barcode"  >
                         </div>
+
                         <div class="mb-3">
-                          <label for="productSlug" class="form-label">Slug</label>
-                          <input type="text" class="form-control" id="productSlug" name="slug" placeholder="Enter slug" required>
+
+                        <label for="productVariationName" class="form-label">Item Code</label>
+                        <input type="text" class="form-control" id="itemcode" name="itemcode"  >
                         </div>
+
+
+                    </div>
+
+                    <div class="col-md-6">
                         <div class="mb-3">
-                          <label for="productCategory" class="form-label">Category</label>
-                          <input type="text" class="form-control" id="productCategory" name="category" placeholder="Enter product category" required>
+
+                        <label for="productVariationName" class="form-label">Stock Status</label>
+                                    <select class="form-control" id="stock_status" name="stock_status">  
+                                        <option value="N/A">--SELECT STATUS--</option>
+                                       <option value="Instock">Instock</option>
+                                       <option value="out-of-stock">Out of Stock</option>
+                                       <option value="backorder">Backorder</option>
+                                     
+                                   </select>
                         </div>
+
+                        <div class="mb-3">
+                          <label for="productUnit" class="form-label">Unit</label>
+                          <select class="form-control" id="unit" name="unit" >
+                            <option value="N/A">--SELECT UNIT--</option>
+                            <option value="piece">Piece</option>
+                            <option value="box">Box</option>
+     
+                        </select>
+
+                        </div>
+
+
                       </div>
-                      <div class="col-md-6">
-                        <div class="mb-3">
-                          <label for="productPrice" class="form-label">Price</label>
-                          <input type="number" class="form-control" id="productPrice" name="price" placeholder="Enter product price" step="0.01" required>
-                        </div>
-                        <div class="mb-3">
-                          <label for="productQuantity" class="form-label">Quantity</label>
-                          <input type="number" class="form-control" id="productQuantity" name="quantity" placeholder="Enter product quantity" required>
-                        </div>
+
+
+
+
+                        
+                      <h6>Dimensions (L×W×H) (cm)</h6>
+                      <!-- Single Product Fields -->
+                       <div class="col-md-3">
+                       <div class="mb-3">
+                                        <label for="productVariationName" class="form-label">Weight (kg)</label>
+                                        <input type="number" class="form-control" id="weight" name="weight"  >
+                       </div>
+                      </div>
+
+
+                      <div class="col-md-3">
+                       <div class="mb-3">
+
+                                        <label for="productVariationName" class="form-label">Lenght</label>
+                                        <input type="number" class="form-control" id="length" name="length"  >
+                       </div>
+                      </div>
+
+
+                      <div class="col-md-3">
+                       <div class="mb-3">
+
+                                        <label for="productVariationName" class="form-label">Width</label>
+                                        <input type="number" class="form-control" id="width" name="width"  >
+                       </div>
+                      </div>
+
+
+
+
+                      <div class="col-md-3">
+                       <div class="mb-3">
+
+                                        <label for="productVariationName" class="form-label">Height</label>
+                                        <input type="number" class="form-control" id="height" name="height"  >
+                       </div>
+                      </div>
+                      
+             
+
+
+                        <div class="col-md-12">
                         <div class="mb-3">
                           <label for="productDescription" class="form-label">Description</label>
-                          <textarea class="form-control" id="productDescription" name="description" rows="4" placeholder="Enter product description" required></textarea>
+                          <textarea class="form-control" id="productDescription" name="description" rows="4" placeholder="Enter product description" ></textarea>
                         </div>
+          
                       </div>
                     </div>
-                  </div>
+                    </div>
+             
 
                   <!-- Product Variation Tab -->
                   <div class="tab-pane fade" id="pills-variation" role="tabpanel" aria-labelledby="pills-variation-tab">
-                    <div class="row">
-                      <!-- Variation Fields -->
-                      <div class="col-md-6">
 
-           
-
-
+                  <div class="row">
+                  <div class="col-md-6">
                         <div class="mb-3">
 
                         <?php
@@ -234,43 +342,161 @@
 
                         ?>
                           <label for="productVariationName" class="form-label">Variation Name</label>
-                                    <select class="form-control" id="productVariationDropdown">
+                                    <select class="form-control" id="productVariationDropdown" name="productionVariations" onchange="productAttrib()">
                                        <option value="">Select a variation</option>
                                        <?php echo $options; ?>
                                    </select>
+                         </div>
+
                         </div>
+
+                        <div class="col-md-6">
+                               <div class="mb-3">
+
+                   
+                                    <label for="productVariationName" class="form-label">
+
+                                    </label>
+                                    <button type="button" class="btn btn-success w-100"  id="addValueBtn" >Add Values</button>
+                                    </div>
+
+
+                         </div>
+
+
+                       
+                  </div>
+                            <div id="productVariations">
+                                    <div class="row variation-form border p-3 mb-3 border-primary">
+                      <!-- Variation Fields -->
+                    
+                    
+                        <div class="col-md-6">
+
+
                         <div class="mb-3">
-                          <label for="productVariationPrice" class="form-label">Variation Price</label>
-                          <input type="number" class="form-control" id="productVariationPrice" name="variation_price" placeholder="Enter variation price" step="0.01" required>
+
+                   
+                            <label for="productVariationName" class="form-label">Values</label>
+                            <select  class="form-control"  id="attributeValuesDropdown" name="variation_values">
+                                <option value="">Select an option</option>
+                            </select>
+                            </div>
+
+
+
+
+                        <div class="mb-3">
+                        <label for="variation_itemcode" class="form-label">Barcode</label>
+                        <input type="text" class="form-control" id="variation_barcode" name="variation_barcode"  >
                         </div>
+
+                        <div class="mb-3">
+
+                        <label for="variation_itemcode" class="form-label">Item Code</label>
+                        <input type="text" class="form-control" id="variation_itemcode" name="variation_itemcode"  >
+                        </div>
+                   
                       </div>
+
+
                       <div class="col-md-6">
-                      <div class="mb-3">
-                          <label for="productVariationQuantity" class="form-label">QR code Image</label>
-                          <input type="text" class="form-control" placeholder="Enter variation quantity" required>
-                        </div>
+                 
 
 
                         <div class="mb-3">
-                          <label for="productVariationQuantity" class="form-label">Variation Quantity</label>
-                          <input type="number" class="form-control" id="productVariationQuantity" name="variation_quantity" placeholder="Enter variation quantity" required>
+
+                        <label for="productVariationName" class="form-label">Stock Status</label>
+                                    <select class="form-control" id="stock_status" name="variation_stock_status">  
+                                        <option value="N/A">--SELECT STATUS--</option>
+                                       <option value="Instock">Instock</option>
+                                       <option value="out-of-stock">Out of Stock</option>
+                                       <option value="backorder">Backorder</option>
+                                                  
+                                   </select>
                         </div>
+
+                        
                         <div class="mb-3">
-                          <label for="productVariationUnit" class="form-label">Variation Unit</label>
-                          <input type="text" class="form-control" id="productVariationUnit" name="variation_unit" placeholder="Enter unit (e.g., size, color)" required>
-                        </div>
+                        <label for="productUnit" class="form-label">Unit</label>
+                        <select class="form-control" id="unit" name="variation_unit" >
+                          <option value="N/A">--SELECT UNIT--</option>
+                          <option value="piece">Piece</option>
+                          <option value="box">Box</option>
+                                                
+                      </select>
+                                                
                       </div>
+
+                   
+                      </div>
+                    
+                      <h6>Dimensions (L×W×H) (cm)</h6>
+                      <!-- Single Product Fields -->
+                       <div class="col-md-3">
+                       <div class="mb-3">
+                                        <label for="productVariationName" class="form-label">Weight (kg)</label>
+                                        <input type="number" class="form-control" id="variation_weight" name="variation_weight"  >
+                       </div>
+                      </div>
+
+
+                      <div class="col-md-3">
+                       <div class="mb-3">
+
+                                        <label for="productVariationName" class="form-label">Lenght</label>
+                                        <input type="number" class="form-control" id="variation_length" name="variation_length"  >
+                       </div>
+                      </div>
+
+
+                      <div class="col-md-3">
+                       <div class="mb-3">
+
+                                        <label for="productVariationName" class="form-label">Width</label>
+                                        <input type="number" class="form-control" id="variation_width" name="variation_width"  >
+                       </div>
+                      </div>
+
+
+
+
+                      <div class="col-md-3">
+                       <div class="mb-3">
+
+                                        <label for="productVariationName" class="form-label">Height</label>
+                                        <input type="number" class="form-control" id="variation_height" name="variation_height"  >
+                       </div>
+                      </div>
+                   
+
+
+
+                                            <div class="col-md-12">
+                          <div class="mb-3">
+                              <label for="productDescription" class="form-label">Description</label>
+                              <textarea class="form-control" id="productDescription" name="variation_description" rows="4" placeholder="Enter product description"></textarea>
+                          </div>
+                          <div class="text-end">
+                              <button type="button" class="btn btn-danger remove-variation">Remove</button>
+                          </div>
+                      </div>                      
+
+
                     </div>
                   </div>
+           
                 </div>
+          
 
                 <!-- Submit Button -->
                 <div class="mb-3">
                   <button type="submit" class="btn btn-primary w-100">Register Product</button>
                 </div>
               </form>
-</div>
+            </div>
 
+</div>
 </div>
 
 
@@ -278,7 +504,7 @@
 
 
         </div>
-     <div class="col-lg-6 col-md-6">
+     <div class="col-lg-4 col-md-6">
     <div class="card h-100">
         <div class="card-header pb-0">
             <h6>Product Overview</h6>
@@ -292,15 +518,15 @@
                 <?php
                     include("connection.php");
                 // Fetch registered products
-                $sql = "SELECT name, category, price, created_at FROM products ORDER BY created_at DESC LIMIT 6";
+                $sql = "SELECT product_name, type, created_at FROM products ORDER BY created_at DESC LIMIT 6";
                 $result = $conn->query($sql);
 
                 if ($result->num_rows > 0) {
                     // Loop through products
                     while ($row = $result->fetch_assoc()) {
-                        $name = htmlspecialchars($row['name']);
-                        $category = htmlspecialchars($row['category']);
-                        $price = htmlspecialchars($row['price']);
+                        $name = htmlspecialchars($row['product_name']);
+                        $type = htmlspecialchars($row['type']);
+                  
                         $created_at = htmlspecialchars($row['created_at']);
                         ?>
                         <div class="timeline-block mb-3">
@@ -309,11 +535,9 @@
                             </span>
                             <div class="timeline-content">
                                 <h6 class="text-dark text-sm font-weight-bold mb-0">
-                                    <?php echo "$name ($category)"; ?>
+                                    <?php echo "$name ($type)"; ?>
                                 </h6>
-                                <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
-                                    Price: $<?php echo $price; ?>
-                                </p>
+                              
                                 <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">
                                     Added on: <?php echo date('d M Y, h:i A', strtotime($created_at)); ?>
                                 </p>
@@ -381,7 +605,7 @@
             <span class="badge filter bg-gradient-danger" data-color="danger" onclick="sidebarColor(this)"></span>
           </div>
         </a>
-        <!-- Sidenav Type -->
+        <!-- Sidenav Type -->     
         <div class="mt-3">
           <h6 class="mb-0">Sidenav Type</h6>
           <p class="text-sm">Choose between 2 different sidenav types.</p>
@@ -420,15 +644,255 @@
   <script src="../assets/js/plugins/perfect-scrollbar.min.js"></script>
   <script src="../assets/js/plugins/smooth-scrollbar.min.js"></script>
   <script src="../assets/js/plugins/chartjs.min.js"></script>
- 
   <script>
+
+    
 document.addEventListener("DOMContentLoaded", function () {
     fetchNextQRCode();
+    generateSlug();
 });
 
+
+
+document.getElementById("addValueBtn").addEventListener("click", function() {
+    var variationsContainer = document.getElementById("productVariations");
+    var originalForm = document.querySelector(".variation-form");
+    
+    if (!originalForm) {
+        console.error("No variation-form found!");
+        return;
+    }
+
+    var newForm = originalForm.cloneNode(true);
+
+    // Clear input fields in the cloned form
+    newForm.querySelectorAll("input, textarea").forEach(input => input.value = "");
+
+    // Append the new variation form
+    variationsContainer.appendChild(newForm);
+
+    // Ensure newly added form has a working remove button
+    enableRemoveButtons();
+});
+
+function enableRemoveButtons() {
+    document.querySelectorAll(".remove-variation").forEach(button => {
+        button.onclick = function() {
+            var formToRemove = this.closest(".variation-form"); // Get closest form container
+
+            if (document.querySelectorAll(".variation-form").length > 1) {
+                formToRemove.remove();
+            } else {
+                alert("At least one variation is required.");
+            }
+        };
+    });
+}
+
+// Initialize remove button functionality
+enableRemoveButtons();
+
+
+$(document).ready(function () {
+    $('#productRegistration').on('submit', function (e) {
+        e.preventDefault();
+
+        var formData = new FormData(this); // Handle file uploads
+
+        // Determine if Single or Variation is selected
+        var isVariation = $('#pills-variation-tab').hasClass('active');
+        formData.append("variation", isVariation ? "true" : "false");
+
+        $.ajax({
+            type: 'POST',
+            url: 'process/product-registration.php', // Adjust the endpoint as needed
+            data: formData,
+            contentType: false, // Important for file uploads
+            processData: false, // Prevent jQuery from processing data
+            success: function (response) {
+                console.log("RAW RESPONSE:", response); // Log raw response for debugging
+
+                try {
+                    // Ensure response is JSON
+                    let jsonResponse = typeof response === "string" ? JSON.parse(response) : response;
+
+                    if (jsonResponse.status === "success") {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: jsonResponse.message,
+                            icon: 'success',
+                            confirmButtonText: 'OK'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                window.location.reload();
+                            }
+                        });
+
+                        $('#productRegistration')[0].reset(); // Reset form after success
+                    } else {
+                        Swal.fire({
+                            title: 'Error',
+                            text: jsonResponse.message || "Something went wrong!",
+                            icon: 'error',
+                            confirmButtonText: 'Try Again'
+                        });
+                    }
+                } catch (e) {
+                    console.error("JSON Parsing Error:", e, "Response:", response);
+                    Swal.fire({
+                        title: 'Error',
+                        text: 'An unexpected error occurred. Check console for details.',
+                        icon: 'error',
+                        confirmButtonText: 'Try Again'
+                    });
+                }
+            },
+            error: function (xhr, status, error) {
+                console.error("AJAX Error:", error, "Status:", status, "XHR:", xhr);
+                Swal.fire({
+                    title: 'Error',
+                    text: 'An error occurred while registering the product.',
+                    icon: 'error',
+                    confirmButtonText: 'Try Again'
+                });
+            }
+        });
+    });
+
+
+});
+
+
+
+function productAttrib() {
+    var variationName = document.getElementById("productVariationDropdown").value;
+    var button = document.getElementById("addValueBtn");
+    var dropdown = document.getElementById("attributeValuesDropdown"); // Target dropdown
+
+    $.ajax({
+        type: 'GET',
+        url: 'fetch/productAttribute-value.php',
+        data: { variationName: variationName },
+        success: function (response) {
+            console.log(response); // Check response structure in console
+
+            if (response.values && Array.isArray(response.values) && response.values.length > 0) {
+                button.disabled = false; // Enable button
+
+                // **Clear dropdown only if new data exists**
+                dropdown.innerHTML = "";
+
+                // Add default placeholder
+                var defaultOption = document.createElement("option");
+                defaultOption.text = "Select an option";
+                defaultOption.value = "";
+                dropdown.appendChild(defaultOption);
+
+                // Populate dropdown with values
+                response.values.forEach(function (item) {
+                    var option = document.createElement("option");
+                    option.value = item.id;
+                    option.text = item.value;
+                    dropdown.appendChild(option);
+                });
+            } else {
+                console.error("No values found", response);
+
+                // **Fix: Do NOT clear dropdown, only disable button**
+                button.disabled = true;
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX Error: " + status + " - " + error);
+            
+            // **Fix: Only disable button if dropdown has no previous values**
+            if (dropdown.options.length === 0) {
+                button.disabled = true;
+            }
+        }
+    });
+}
+
+
+
+function productAttrib() {
+    var variationName = document.getElementById("productVariationDropdown").value;
+    var button = document.getElementById("addValueBtn");
+    var dropdown = document.getElementById("attributeValuesDropdown"); // Target dropdown
+
+    $.ajax({
+        type: 'GET',
+        url: 'fetch/productAttribute-value.php',
+        data: { variationName: variationName },
+        success: function (response) {
+            console.log(response); // Check response structure in console
+
+            // Clear the dropdown before processing the response
+            dropdown.innerHTML = "";
+
+            if (response.values && Array.isArray(response.values) && response.values.length > 0) {
+                button.disabled = false; // Enable button
+
+                // Add default placeholder
+                var defaultOption = document.createElement("option");
+                defaultOption.text = "Select an option";
+                defaultOption.value = "";
+                dropdown.appendChild(defaultOption);
+
+                // Populate dropdown with values
+                response.values.forEach(function (item) {
+                    var option = document.createElement("option");
+                    option.value = item.id;
+                    option.text = item.value;
+                    dropdown.appendChild(option);
+                });
+            } else {
+                console.error("No values found", response);
+                
+                // **Clear the dropdown and disable the button**
+                button.disabled = true;
+            }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX Error: " + status + " - " + error);
+            
+            // **On AJAX error, clear the dropdown and disable the button**
+            dropdown.innerHTML = "No Values";
+            button.disabled = true;
+        }
+    });
+}
+
+
+
+
+// 🖼️ Show uploaded product image instantly
+document.getElementById("productImage").addEventListener("change", function(event) {
+    const file = event.target.files[0]; 
+    const showImage = document.getElementById("showImage");
+
+    if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            showImage.innerHTML = `<img src="${e.target.result}" class="img-thumbnail" width="150">`;
+        };
+        reader.readAsDataURL(file);
+    } else {
+        showImage.innerHTML = ``; 
+    }
+});
+
+// 🏷️ Generate Slug from Name
+function generateSlug() {
+    var name = document.getElementById('productName').value;
+    var slug = name.trim().toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]+/g, '');
+    document.getElementById('slug').value = slug;
+}
+
+// 📦 Fetch Next QR Code and Update Image
 function fetchNextQRCode() {
-    fetch('fetch/barcode_registration.php') // Adjust API endpoint
-        .then(response => response.json())
+    fetch('fetch/barcode_registration.php') 
+        .then(response => response.json()) 
         .then(data => {
             let lastNumber = data.last_qrcode ? parseInt(data.last_qrcode, 10) : 1000000000;
             let nextNumber = lastNumber + 1;
@@ -436,27 +900,28 @@ function fetchNextQRCode() {
             // Set the generated number in the input field
             document.getElementById("qrcode").value = nextNumber;
 
-            // Generate the QR code image
+            // Generate and display QR Code Image
             generateQRCode(nextNumber);
         })
         .catch(error => console.error("Error fetching QR code:", error));
 }
 
+// 🖼️ Generate QR Code Image (Fixes cache issue)
 function generateQRCode(qrText) {
-  let qrCodeUrl = `https://quickchart.io/qr?text=${qrText}&size=150`;
-  document.getElementById("qrcodeImage").src = qrCodeUrl;
+    let timestamp = new Date().getTime(); // Unique timestamp to force refresh
+    let qrCodeUrl = `https://quickchart.io/qr?text=${qrText}&size=150&t=${timestamp}`;
+    document.getElementById("qrcodeImage").src = qrCodeUrl;
 }
 
+// 🖱️ Enable Scrollbar for Windows users
+var win = navigator.platform.indexOf('Win') > -1;
+if (win && document.querySelector('#sidenav-scrollbar')) {
+    var options = { damping: '0.5' };
+    Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
+}
+</script>
 
 
-    var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
-      }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }
-  </script>
   <!-- Github buttons -->
   <script async defer src="https://buttons.github.io/buttons.js"></script>
   <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
