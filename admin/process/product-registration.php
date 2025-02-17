@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 include("../connection.php");
 
 header("Content-Type: application/json");
-ob_end_clean(); // Clean output before JSON
+ob_end_clean();
 
 $response = ["status" => "error", "message" => "Unknown error occurred"];
 
@@ -16,7 +16,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         exit;
     }
 
-    // Fetch and sanitize inputs
+    // Get and sanitize the input data
     $productName = mysqli_real_escape_string($conn, $_POST["productname"]);
     $qrcode = mysqli_real_escape_string($conn, $_POST["qrcode"]);
     $slug = mysqli_real_escape_string($conn, $_POST["slug"]);
@@ -25,11 +25,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $category = mysqli_real_escape_string($conn, $_POST["category"]);
     $type = isset($_POST["variation"]) && $_POST["variation"] === "true" ? "variation" : "single";
 
-    // Function to return value or "N/A"
+    // Helper function to return default values if necessary
     function getValue($conn, $value, $default = "N/A") {
         return empty($value) ? $default : mysqli_real_escape_string($conn, $value);
     }
 
+    // Assigning values for product fields
     $weight = getValue($conn, $_POST["weight"]);
     $length = getValue($conn, $_POST["length"]);
     $width = getValue($conn, $_POST["width"]);
@@ -38,10 +39,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $description = getValue($conn, $_POST["description"]);
     $stockstatus = getValue($conn, $_POST["stock_status"]);
 
-    // Insert into products table
+    // Insert query for the product
     $sql = "INSERT INTO products (product_name, slug, qrcode, itemcode, barcode, weight, length, width, height, unit, category, description, type, stock_status) 
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
+    // Prepare and execute the query
     if ($stmt = $conn->prepare($sql)) {
         $stmt->bind_param(
             "ssssssssssssss",
@@ -51,42 +53,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         );
 
         if ($stmt->execute()) {
-            $productId = $stmt->insert_id;
+            $productId = $stmt->insert_id;  // Get the product ID after insertion
             $stmt->close();
 
-            // ✅ Handle multiple variations
-            if ($type === "variation" && isset($_POST["variations"]) && is_array($_POST["variations"])) {
-                $variationSql = "INSERT INTO products_variation 
-                                 (product_id, variation_name, variation_value, barcode, itemcode, stock_status, unit, weight, length, width, height, description) 
-                                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            // Insert variation only if the product type is "variation"
+            if ($type === "variation" && isset($_POST["variation"])) {
+                // Ensure the correct SQL query and values for variations
+                $variationSql = "INSERT INTO products_variation (product_id, product_variation, attribute_value) VALUES (?, ?, ?)";
 
-                if ($variationStmt = $conn->prepare($variationSql)) {
-                    foreach ($_POST["variations"] as $variation) {
-                        $variationName = mysqli_real_escape_string($conn, $variation["variation_name"]);
-                        $variationValue = mysqli_real_escape_string($conn, $variation["variation_value"]);
-                        $variationBarcode = getValue($conn, $variation["barcode"]);
-                        $variationItemCode = getValue($conn, $variation["itemcode"]);
-                        $variationStockStatus = getValue($conn, $variation["stock_status"]);
-                        $variationUnit = getValue($conn, $variation["unit"]);
-                        $variationWeight = getValue($conn, $variation["weight"]);
-                        $variationLength = getValue($conn, $variation["length"]);
-                        $variationWidth = getValue($conn, $variation["width"]);
-                        $variationHeight = getValue($conn, $variation["height"]);
-                        $variationDescription = getValue($conn, $variation["description"]);
+                // Make sure the variation data is passed correctly
+                $productionVariation = isset($_POST["productionVariations"]) ? $_POST["productionVariations"] : "default";  // Use the name of the input field for variationsc
+                $variation_values = isset($_POST["variation_values"]) ? $_POST["variation_values"] : "default";  // Use the name of the input field for variationsc
 
-                        $variationStmt->bind_param(
-                            "isssssssssss",
-                            $productId, $variationName, $variationValue, $variationBarcode, $variationItemCode,
-                            $variationStockStatus, $variationUnit, $variationWeight, $variationLength, $variationWidth,
-                            $variationHeight, $variationDescription
-                        );
+                // Prepare and execute the query for inserting variations
+                if ($variationStmt = $conn->prepare($variationSql)) {   
+                    $variationStmt->bind_param("iii", $productId, $productionVariation, $variation_values);
 
-                        if (!$variationStmt->execute()) {
-                            error_log("❌ Variation Insert Failed: " . $variationStmt->error);
-                        } else {
-                            error_log("✅ Variation Inserted: Product ID: $productId, Variation: $variationName");
-                        }
+                    if (!$variationStmt->execute()) {
+                        error_log("❌ Variation Insert Failed: " . $variationStmt->error);
+                    } else {
+                        error_log("✅ Variation Inserted: Product ID: $productId, Variation: $productionVariation");
                     }
+
                     $variationStmt->close();
                 } else {
                     $response["message"] = "Variation SQL Prepare Failed: " . $conn->error;
@@ -96,9 +84,9 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             }
 
             $response["status"] = "success";
-            $response["message"] = "✅ Product and variations registered successfully!";
+            $response["message"] = "Product and variations registered successfully!";
         } else {
-            $response["message"] = "Execution Failed: " . $stmt->error;
+            $response["message"] = "Product Insertion Failed: " . $stmt->error;
         }
     } else {
         $response["message"] = "SQL Prepare Failed: " . $conn->error;

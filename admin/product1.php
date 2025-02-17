@@ -244,9 +244,9 @@
                         <label for="productVariationName" class="form-label">Stock Status</label>
                                     <select class="form-control" id="stock_status" name="stock_status">  
                                         <option value="N/A">--SELECT STATUS--</option>
-                                       <option value="Instock">Instock</option>
-                                       <option value="out-of-stock">Out of Stock</option>
-                                       <option value="backorder">Backorder</option>
+                                       <option value="In Stock">Instock</option>
+                                       <option value="Out of Stock">Out of Stock</option>
+                                       <option value="Back Order">Backorder</option>
                                      
                                    </select>
                         </div>
@@ -657,18 +657,39 @@ if (addValueBtn) {
     addValueBtn.addEventListener("click", function () {
         const variationsContainer = document.getElementById("productVariations");
         const originalForm = document.querySelector(".variation-form");
-        
+
         if (!originalForm) {
             console.error("No variation-form found!");
             return;
         }
 
         const newForm = originalForm.cloneNode(true);
-        newForm.querySelectorAll("input, textarea").forEach(input => input.value = "");
+
+        // Copy values from the original form
+        newForm.querySelectorAll("input, textarea").forEach((input) => {
+            if (input.dataset.dependent === "true") {
+                input.value = input.value; // inherit value
+            } else {
+                input.value = ""; // clear non-dependent fields
+            }
+        });
+
         variationsContainer.appendChild(newForm);
         enableRemoveButtons();
     });
 }
+
+// Function to enable remove buttons for forms
+function enableRemoveButtons() {
+    document.querySelectorAll(".remove-variation-btn").forEach((btn) => {
+        btn.addEventListener("click", function () {
+            this.closest(".variation-form").remove();
+        });
+    });
+}
+
+
+
 
 // Enable remove button functionality
 function enableRemoveButtons() {
@@ -691,6 +712,7 @@ $(document).ready(function () {
         let formData = new FormData(this);
         let isVariation = $('#pills-variation-tab').hasClass('active');
         formData.append("variation", isVariation ? "true" : "false");
+        console.log(...formData.entries()); // This will log all form data
 
         $.ajax({
             type: 'POST',
