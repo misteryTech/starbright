@@ -688,9 +688,6 @@ function enableRemoveButtons() {
     });
 }
 
-
-
-
 // Enable remove button functionality
 function enableRemoveButtons() {
     document.querySelectorAll(".remove-variation").forEach(button => {
