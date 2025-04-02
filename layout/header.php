@@ -1,3 +1,7 @@
+<?php
+session_start(); // Start the session at the top
+include("../admin/connection.php");
+?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -33,4 +37,20 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+        // JavaScript to remove success message after 5 seconds
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                let successAlert = document.getElementById("success-message");
+                if (successAlert) {
+                    successAlert.style.transition = "opacity 0.5s";
+                    successAlert.style.opacity = "0";
+                    setTimeout(() => successAlert.remove(), 500); // Remove after fade-out
+                }
+            }, 5000); // 5 seconds
+        });
+    </script>
+
+
 </head>

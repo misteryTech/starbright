@@ -139,7 +139,7 @@
                 <!-- Tab Navigation -->
                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                   <li class="nav-item" role="presentation">
-                    <a class="nav-link active" id="pills-single-tab" data-bs-toggle="pill" href="#pills-single" role="tab" aria-controls="pills-single" aria-selected="true">Single Product</a>
+                    <a class="nav-link active" id="pills-single-tab" data-bs-toggle="pill" href="#pills-single" role="tab" aria-controls="pills-single" aria-selected="true"  checked onclick="toggleVariationFields()">Single Product</a>
                   </li>
                   <li class="nav-item" role="presentation">
                     <a class="nav-link" id="pills-variation-tab" data-bs-toggle="pill" href="#pills-variation" role="tab" aria-controls="pills-variation" aria-selected="false">Product Variation</a>

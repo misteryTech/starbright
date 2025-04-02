@@ -1,4 +1,5 @@
 <?php
+session_start(); // Start the session
 include("../connection.php");
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -11,7 +12,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $sql = "INSERT INTO attribute_values (attribute_id, value) VALUES ('$attributeId', '$value')";
             $conn->query($sql);
         }
-        echo "Values inserted successfully.";
+
+        // Set session success message
+        $_SESSION['success'] = "Values inserted successfully.";
+
+        // Redirect to attributes.php
+        header("Location: ../attributes.php");
+        exit(); // Stop script execution after redirect
     } else {
         echo "Invalid data provided.";
     }
