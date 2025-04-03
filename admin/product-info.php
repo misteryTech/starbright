@@ -185,6 +185,7 @@ if (isset($_SESSION['alert'])) {
     </div>
    
 </div> 
+
 <div id="formsContainer" class="mt-3 col-12"></div>
 
 
@@ -206,14 +207,9 @@ if (isset($_SESSION['alert'])) {
     
 </form>
 
-
-
     </div>
   </div>
 </div>
-
-
-
 
         <div class="col-lg-6 col-md-6">
           <div class="card h-100">
@@ -238,16 +234,26 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Function to fetch values based on productBrand
     function fetchValues(attributeId, selectElement) {
-        $.ajax({
-            url: "fetch/fetch_values.php",
-            method: "POST",
-            data: { attribute_id: attributeId },
-            success: function (response) {
+    console.log("Fetching values for attribute ID:", attributeId); // Debugging
+
+    $.ajax({
+        url: "fetch/fetch_values.php",
+        method: "POST",
+        data: { attribute_id: attributeId },
+        success: function (response) {
+            console.log("Received response:", response); // Debugging
+            if (response.trim() === "") {
+                console.error("Error: No data received from fetch_values.php");
+            } else {
                 selectElement.innerHTML = '<option value="">--SELECT VALUES--</option>' + response;
-                disableSelectedValues(selectElement);
             }
-        });
-    }
+        },
+        error: function (xhr, status, error) {
+            console.error("AJAX Error:", error);
+        }
+    });
+}
+
 
     // Function to disable already selected values in the dropdown
     function disableSelectedValues(selectElement) {
@@ -258,13 +264,12 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Fetch values for the initial select if a product brand is selected
-    const initialAttributeId = $("#productBrand").val();
-    if (initialAttributeId) {
-        const initialSelect = document.querySelector('select[name="values[]"]');
-        if (initialSelect) {
-            fetchValues(initialAttributeId, initialSelect);
-        }
-    }
+    document.getElementById("productBrand").addEventListener("change", function () {
+    let attributeId = this.value;
+    let selectElement = document.querySelector("select[name='values[]']");
+    fetchValues(attributeId, selectElement);
+});
+
 
     // Add a new form when "Add Values" button is clicked
     document.getElementById('addValuesBtn').addEventListener('click', function () {
@@ -446,6 +451,23 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+
+
+document.getElementById("stockForm").addEventListener("submit", function (event) {
+    let form = this;
+
+    document.querySelectorAll("select[name='values[]']").forEach((select) => {
+        if (!select.value) return; // Skip empty selections
+
+        let hiddenInput = document.createElement("input");
+        hiddenInput.type = "hidden";
+        hiddenInput.name = "values[]";
+        hiddenInput.value = select.value;
+        form.appendChild(hiddenInput);
+    });
+
+    console.log("Submitting form with values:", new FormData(form));
+});
 
 
 
