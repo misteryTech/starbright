@@ -20,23 +20,21 @@
             <div class="card-body px-4 pb-4">
               <form id="searchForm">
                 <div class="row">
+      
                 <div class="col-md-12 text-center">
-                   <button id="open-qr-reader" type="button" class="btn btn-primary w-50">
-                     <i class="fa fa-qrcode"></i> Open QR Code Scanner
-                   </button>
-                  <div id="qr-reader" style="width: 300px; margin: auto; display: none;"></div>
-                  <p id="qr-result" class="mt-3 text-success" style="display: none;"></p>
-                </div>
+  <button id="open-qr-reader" type="button" class="btn btn-primary w-50">
+    <i class="fa fa-qrcode"></i> Open QR Code Scanner
+  </button>
+  <div id="qr-reader" style="width: 300px; margin: auto; display: none;"></div>
+</div>
+
+<div class="col-md-12 text-center mt-4">
+  <label for="barcodeInput" class="form-label">Enter or Scan QR Code</label>
+  <input type="text" class="form-control" id="barcodeInput" placeholder="Enter QR Code">
+  <button type="button" id="searchButton" class="btn btn-primary w-50 mt-2">Search</button>
+</div>
 
 
-
-                  <div class="col-md-12 text-center">
-                    <div class="mb-3">
-                      <label for="barcodeInput" class="form-label">Search via Barcode</label>
-                      <input type="text" class="form-control" id="barcodeInput" name="barcode" placeholder="Enter barcode">
-                    </div>
-                    <button type="button" id="searchButton" class="btn btn-primary w-50">Search</button>
-                  </div>
                 </div>
               </form>
             </div>
@@ -71,6 +69,23 @@
         </div>
       </div>
 
+
+<!-- Product Info Modal -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="productModalLabel">Product Details</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body" id="productDetails">
+        <!-- Product details will be injected here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+
       <?php include("footer.php"); ?>
     </div>
   </main>
@@ -85,43 +100,76 @@
 
 
   <script src="../assets/js/soft-ui-dashboard.min.js?v=1.0.3"></script>
-
   <script>
-     const qrResult = document.getElementById("qr-result");
   const qrReaderContainer = document.getElementById("qr-reader");
   const openQrBtn = document.getElementById("open-qr-reader");
-
+  const input = document.getElementById("barcodeInput");
+  const productModal = document.getElementById("productModal");
   let qrScanner;
 
-  openQrBtn.addEventListener("click", () => {
-    qrReaderContainer.style.display = "block";
+  function fetchProduct(code) {
+    fetch('get_product.php?code=' + encodeURIComponent(code))
+      .then(response => response.json())
+      .then(data => {
+        if (data.success) {
+          const product = data.product;
+          document.getElementById("productDetails").innerHTML = `
+            <img src="../admin/process/${product.image}" alt="${product.name}" class="img-fluid rounded mb-3" style="max-width: 300px;">
+            <p><strong>Name:</strong> ${product.name}</p>
+            <p><strong>Slug:</strong> ${product.slug}</p>
+          `;
+          const modal = new bootstrap.Modal(productModal);
+          modal.show();
+        } else {
+          alert(data.message || "Product not found");
+        }
+      })
+      .catch(error => {
+        console.error("Error:", error);
+        alert("An error occurred while fetching the product.");
+      });
+  }
 
+  function startScanner() {
     if (!qrScanner) {
       qrScanner = new Html5Qrcode("qr-reader");
-
-      qrScanner.start(
-        { facingMode: "environment" }, // Rear camera
-        {
-          fps: 10,    // Scans per second
-          qrbox: 250  // Size of the scanning box
-        },
-        (decodedText, decodedResult) => {
-          qrResult.innerText = `Scanned: ${decodedText}`;
-          qrResult.style.display = "block";
-
-          // Stop scanner after successful scan
-          qrScanner.stop().then(() => {
-            qrReaderContainer.style.display = "none";
-          });
-        },
-        (errorMessage) => {
-          // Optional: handle scan failure or log errors
-        }
-      ).catch(err => {
-        console.error("QR Scanner failed to start", err);
-      });
     }
+
+    qrReaderContainer.style.display = "block";
+    qrScanner.start(
+      { facingMode: "environment" },
+      { fps: 10, qrbox: 250 },
+      (decodedText) => {
+        qrScanner.stop().then(() => {
+          qrReaderContainer.style.display = "none";
+          input.value = decodedText;
+          fetchProduct(decodedText);
+        });
+      },
+      (errorMessage) => {
+        // optional: console.warn(errorMessage);
+      }
+    ).catch(err => {
+      console.error("QR Scanner failed to start", err);
+    });
+  }
+
+  openQrBtn.addEventListener("click", startScanner);
+
+  document.getElementById("searchButton").addEventListener("click", function () {
+    const code = input.value.trim();
+    if (!code) {
+      alert("Please enter a QR Code");
+      return;
+    }
+    fetchProduct(code);
   });
-  </script>
+
+  // Restart scanner when product modal is closed
+  productModal.addEventListener("hidden.bs.modal", () => {
+    startScanner();
+  });
+</script>
+
 </body>
 </html>
